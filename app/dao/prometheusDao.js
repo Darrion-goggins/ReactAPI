@@ -1,12 +1,5 @@
 const pool = require('../config/dbconfig');
 
-/* SELECT c.id,c.class_name, 
-s.school_name as School_name,
-r.role_type as role
-FROM classes c
-JOIN spell_type s ON c.spell_access_school = s.id
-JOIN roles r ON c.class_role = r.id */
-
 class PrometheusDao {
     constructor() {
         this.pool = pool;
@@ -44,8 +37,11 @@ class PrometheusDao {
     }
 
     findBySpell(req, res) {
-        let sql = `SELECT * spell_list
-        JOIN spell_type st ON spell_type_id = st.id`;
+        let sql = `SELECT sl.id,sl.spell_name,sl.mp_cost,sl.description, 
+        st.school_name as spell_type 
+        from spell_list sl
+        JOIN spell_type st ON sl.spell_type_id = st.id
+        ORDER BY sl.id ASC`;
         this.pool.query(sql, (err, rows) => {
             if (err) {
                 res.json({
@@ -58,7 +54,7 @@ class PrometheusDao {
     }
 
     findBySpellType(req, res) {
-        let sql = 'SELECT * FROM spell_type';
+        let sql = `SELECT * FROM spell_type`;
         this.pool.query(sql, (err, rows) => {
             if (err) {
                 res.json({
@@ -68,35 +64,6 @@ class PrometheusDao {
             };
             res.json(rows);
         });
-    }
-
-    updateById(req, res) {
-        let fields = Object.keys(req.body);
-        fields[fields.indexOf('condition')] = '`condition`';
-        let values = Object.values(req.body);
-
-        if (!req.params.id) {
-            res.json({
-                "err": true,
-                "message": 'Missing ID'
-            });
-        } else if (fields.length == 0) {
-            res.json({
-                "err": true,
-                "message": 'No fields to update'
-            });
-        }
-        
-        let sql = `UPDATE prometheus SET ${fields.join('=?,')}=? WHERE id = ?`;
-        this.pool.query(sql, [...values, req.params.id], (err, rows) => {
-            if (err) {
-                res.json({
-                    "err": true,
-                    "message": err
-                });
-            };
-            res.json(rows);
-        });        
     }
 
     create(req, res) {
@@ -129,19 +96,6 @@ class PrometheusDao {
             }
             res.json(rows);
         });        
-    }
-
-    deleteById(req, res, id) {
-        let sql = "UPDATE prometheus set deleted_at = NOW() WHERE id = ?";
-        this.pool.query(sql, [id], (err, rows) => {
-            if (err) {
-                res.json({
-                    "err": true,
-                    "message": err
-                });
-            };
-            res.json(rows);
-        });
     }
 
     run (req, res, sql, params) {
