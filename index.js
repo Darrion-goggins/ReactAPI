@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
     res.json({
         "All Classes": 'http://localhost:3040/api/classes',
-        "All Roles": 'http://localhost:3040/api/roles',
+        "DPS": 'http://localhost:3040/api/roles',
         "All Spells": 'http://localhost:3040/api/spell_list',
         "All Spell Schools": 'http://localhost:3040/api/spell_type'
     });

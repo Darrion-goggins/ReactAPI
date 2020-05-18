@@ -4,18 +4,23 @@ const dao = new daoClass();
 const express = require('express');
 const router = express.Router();
 
-// ALL CLASS ROUTE -> /api/class/
-router.get('/classes', (req, res) => {
-    dao.findByClass(req, res);
-});
-
+// ALL ROLES ROUTE
 router.get('/roles', (req, res) => {
-    dao.findByRole(req, res);
+    dao.findDPS(req, res);
 });
 
-// FIND BY MAKE ROUTE -> /api/cars/make/:make
-router.get('/spell_list', (req, res) => { 
-    dao.findBySpell(req, res);
+// FIND BY CLASS ID
+router.get('/classes/:id', (req, res) => {
+    dao.findSingleClass(req, res, req.params.id)
+});
+
+// FIND DPS
+router.get('/dps', (req,res, id) => {
+    dao.findDPS(req,res, req.paramas.id)
+});
+
+router.get('/spell_list/:school_name', (req, res) => { 
+    dao.findBySpell(req, res, req.params.school_name);
 });
 
 router.get('/spell_type', (req, res) => { 
@@ -34,15 +39,5 @@ router.delete('/delete/:id', (req, res) => {
     dao.delete(req, res);
 })
 
-// /api/cars/post
-router.post('/post', (req,res) => {
-    console.log(req.body);
-
-    /* dao.updateById(req, res);
-
-    dao.updateByColor(req, res); */
-
-    dao.updateMPG(req, res);
-});
 
 module.exports = router;
